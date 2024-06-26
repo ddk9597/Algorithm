@@ -41,12 +41,9 @@ import java.util.Map;
  *
  * */
 
-
 /* 어떻게 풀어야 할까
  * 
  * 1. 서로 준 선물 비교
- * 	1) 선물 준 사람, 받은 사람 동시 카운트
- * 	2) =
  *
  * 2. 선물 지수(giftQuotient) 비교
  * 	1). 선물을 준 사람 카운트(Map giver<name:give>)
@@ -56,42 +53,62 @@ import java.util.Map;
  * */
 public class Solution005 {
 	public int solution(String[] friends, String[] gifts) {
-		
+
 		int a = friends.length;
-		
+
 		// giftQuotient 비교하기 위한 List 객체 생성
 		List<String> giveCount = new ArrayList<>();
 		List<String> receiveCount = new ArrayList<>();
-		
+
 		// 서로 준 선물 비교하기 위한 map 객체 생성
 		Map<String, Integer> compare = new HashMap<>();
-		
+
 		// friends Array를 순회하면서 값 비교하기
-		for(int i = 0 ; i < a ; i ++) {
+		for (int i = 0; i < a; i++) {
 			// 1. freinds 배열에 있다면 compare의 Key에 추가, value는 우선 0으로 설정
-			if(!friends[i].isEmpty()) {
+			if (!friends[i].isEmpty()) {
 				compare.put(friends[i], 0);
 			}
 		}
-		
+
 		// 2. gifts의 i 번째 인덱스의 첫번째 문자가 compare에 있다면 해당 Key의 value를 =+1
-		for(String gift : gifts) {
+		for (String gift : gifts) {
 			String[] parts = gift.split(" ");
 			String giver = parts[0];
 			String receiver = parts[1];
-			
-			// 3. 주는 사람, 받는 사람 각각을 List에 중복 구분 없이 추가
+
+			// 3. 주는 사람, 받는 사람 각각을 List에 중복 여부 상관 없이 추가
 			giveCount.add(giver);
 			receiveCount.add(receiver);
 		}
-		
-		
-		
-		
+
+		// 4. 선물 지수 구하기
+		// friends Array를 순회하면서 각각 giver, receiver에 있는 수를 확인 후 선물 지수 계산하기
+		for (String name : friends) {
+
+			int given = 0;
+			int received = 0;
+
+			// given ++ 조건 및 수행
+			for (String giver : giveCount) {
+				if (giver.equals(name)) {
+					given++;
+				}
+			}
+
+			for (String receiver : receiveCount) {
+				if (receiver.equals(name)) {
+					received++;
+				}
+			}
+			
+			int giftQuotient = given - received;
+			compare.put(name, giftQuotient);
+
+		}
+
 		// 최종 결산하기
-		
-		
-		
+
 		int answer = 0;
 		return answer;
 	}
