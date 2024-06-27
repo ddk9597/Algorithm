@@ -1,5 +1,8 @@
 package com.training;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /* 성격 유형 검사하기
  * 
  * 카카오 성격 유형 검사지 만들기
@@ -73,7 +76,9 @@ package com.training;
  * */
 public class Solution007 {
 
-	public static String solution(String[] survey, int[] choices) {
+	public String solution(String[] survey, int[] choices) {
+		String answer = "";
+
 		// 성격 유형 점수를 저장하기 위한 Map 초기화
 		Map<Character, Integer> scores = new HashMap<>();
 		scores.put('R', 0);
@@ -102,12 +107,12 @@ public class Solution007 {
 		}
 
 		// 최종 성격 유형 결정
-		StringBuilder result = new StringBuilder();
-		result.append(scores.get('R') >= scores.get('T') ? 'R' : 'T');
-		result.append(scores.get('C') >= scores.get('F') ? 'C' : 'F');
-		result.append(scores.get('J') >= scores.get('M') ? 'J' : 'M');
-		result.append(scores.get('A') >= scores.get('N') ? 'A' : 'N');
+		answer += scores.get('R') >= scores.get('T') ? 'R' : 'T';
+		answer += scores.get('C') >= scores.get('F') ? 'C' : 'F';
+		answer += scores.get('J') >= scores.get('M') ? 'J' : 'M';
+		answer += scores.get('A') >= scores.get('N') ? 'A' : 'N';
 
-		return result.toString();
+		return answer;
 	}
+
 }
