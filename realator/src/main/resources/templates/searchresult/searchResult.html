@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="searchResult.css">
+    <title>서울시 부동산 중개업소 정보</title>
+</head>
+<body>
+    <h1>부동산 중개업소 정보</h1>
+
+    <div>
+        <label for="searchCggCd">구 명: </label>
+        <input type="text" id="searchCggCd" placeholder="구명을 입력하세요">
+        <label for="searchBzmnConm">업체명: </label>
+        <input type="text" id="searchBzmnConm" placeholder="업체명을 입력하세요">
+        <label for="searchMdtBsnsNm">담당자명: </label>
+        <input type="text" id="searchMdtBsnsNm" placeholder="담당자명을 입력하세요">
+        <button onclick="filterData()">검색</button>
+    </div>
+
+    <table id="landBizInfoTable">
+        <thead>
+            <tr>
+                <th>등록번호</th>
+                <th>구 코드</th>
+                <th>법정동 코드</th>
+                <th>구명</th>
+                <th>법정동명</th>
+                <th>주소</th>
+                <th>담당자명</th>
+                <th>업체명</th>
+                <th>전화번호</th>
+                <th>행정처분</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- JSON 데이터가 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+
+    <script>
+        let originalData = [];
+        const apiUrlTemplate = 'http://openapi.seoul.go.kr:8088/574345677664646b31303243637a7778/json/landBizInfo/{start}/{end}/';
+        const totalDataCount = 25874;
+        // const pageSize = 1000;
+        const pageSize = 500;
+
+        async function fetchData(start, end) {
+            const apiUrl = apiUrlTemplate.replace('{start}', start).replace('{end}', end);
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+            return data.landBizInfo.row;
+        }
+
+        async function fetchAllData() {
+            const promises = [];
+            for (let i = 1; i <= totalDataCount; i += pageSize) {
+                promises.push(fetchData(i, i + pageSize - 1));
+            }
+            const results = await Promise.all(promises);
+            originalData = results.flat();
+            displayData(originalData);
+        }
+
+        function displayData(data) {
+            const tableBody = document.getElementById('landBizInfoTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            data.forEach(function(item) {
+                const row = document.createElement('tr');
+
+                const fields = ['SYS_REG_NO', 'SGG_CD', 'STDG_CD', 'CGG_CD', 'LGL_DONG_NM', 'ADDR', 'MDT_BSNS_NM', 'BZMN_CONM', 'TELNO'];
+
+                fields.forEach(function(field) {
+                    const cell = document.createElement('td');
+                    cell.textContent = item[field] || '';
+                    row.appendChild(cell);
+                });
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function filterData() {
+            const searchCggCd = document.getElementById('searchCggCd').value.toLowerCase();
+            const searchBzmnConm = document.getElementById('searchBzmnConm').value.toLowerCase();
+            const searchMdtBsnsNm = document.getElementById('searchMdtBsnsNm').value.toLowerCase();
+
+            const filteredData = originalData.filter(function(item) {
+                return (searchCggCd === '' || item.CGG_CD.toLowerCase().includes(searchCggCd)) &&
+                       (searchBzmnConm === '' || item.BZMN_CONM.toLowerCase().includes(searchBzmnConm)) &&
+                       (searchMdtBsnsNm === '' || item.MDT_BSNS_NM.toLowerCase().includes(searchMdtBsnsNm));
+            });
+
+            displayData(filteredData);
+        }
+
+        // 초기 데이터 로드
+        fetchAllData();
+    </script>
+</body>
+</html>
