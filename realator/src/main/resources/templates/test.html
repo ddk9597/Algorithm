@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>서울시 부동산 중개업소 정보</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>서울시 부동산 중개업소 정보</h1>
+
+    <div>
+        <label for="searchCggCd">구명: </label>
+        <input type="text" id="searchCggCd" placeholder="구명을 입력하세요">
+        <label for="searchBzmnConm">업체명: </label>
+        <input type="text" id="searchBzmnConm" placeholder="업체명을 입력하세요">
+        <label for="searchMdtBsnsNm">담당자명: </label>
+        <input type="text" id="searchMdtBsnsNm" placeholder="담당자명을 입력하세요">
+        <button onclick="fetchAndFilterData()">검색</button>
+    </div>
+
+    <table id="landBizInfoTable">
+        <thead>
+            <tr>
+                <th>등록번호</th>
+                <th>구 코드</th>
+                <th>법정동 코드</th>
+                <th>구명</th>
+                <th>법정동명</th>
+                <th>주소</th>
+                <th>담당자명</th>
+                <th>업체명</th>
+                <th>전화번호</th>
+                <th>상태 구분</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- JSON 데이터가 여기에 삽입됩니다 -->
+        </tbody>
+    </table>
+
+    <div class="pagination" id="pagination">
+        <!-- 페이지네이션 버튼이 여기에 삽입됩니다 -->
+    </div>
+
+    <script>
+        let originalData = [];
+        let filteredData = [];
+        const pageSize = 20;
+        let currentPage = 1;
+
+        function fetchAndFilterData() {
+            const searchCggCd = document.getElementById('searchCggCd').value.toLowerCase();
+            const searchBzmnConm = document.getElementById('searchBzmnConm').value.toLowerCase();
+            const searchMdtBsnsNm = document.getElementById('searchMdtBsnsNm').value.toLowerCase();
+
+            const apiUrlTemplate = 'http://openapi.seoul.go.kr:8088/574345677664646b31303243637a7778/json/landBizInfo/{start}/{end}/';
+            const totalDataCount = 25874;
+            const promises = [];
+
+            for (let i = 1; i <= totalDataCount; i += pageSize) {
+                const apiUrl = apiUrlTemplate.replace('{start}', i).replace('{end}', i + pageSize - 1);
+                promises.push(fetch(apiUrl).then(response => response.json()));
+            }
+
+            Promise.all(promises).then(results => {
+                originalData = results.flatMap(result => result.landBizInfo.row);
+                filteredData = originalData.filter(function(item) {
+                    return (searchCggCd === '' || item.CGG_CD.toLowerCase().includes(searchCggCd)) &&
+                           (searchBzmnConm === '' || item.BZMN_CONM.toLowerCase().includes(searchBzmnConm)) &&
+                           (searchMdtBsnsNm === '' || item.MDT_BSNS_NM.toLowerCase().includes(searchMdtBsnsNm));
+                });
+                currentPage = 1;
+                displayData(filteredData.slice(0, pageSize));
+                setupPagination(filteredData.length);
+            });
+        }
+
+        function displayData(data) {
+            const tableBody = document.getElementById('landBizInfoTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            data.forEach(function(item) {
+                const row = document.createElement('tr');
+
+                const fields = ['SYS_REG_NO', 'SGG_CD', 'STDG_CD', 'CGG_CD', 'LGL_DONG_NM', 'ADDR', 'MDT_BSNS_NM', 'BZMN_CONM', 'TELNO', 'STTS_SE'];
+
+                fields.forEach(function(field) {
+                    const cell = document.createElement('td');
+                    cell.textContent = item[field] || '';
+                    row.appendChild(cell);
+                });
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function setupPagination(totalItems) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            const totalPages = Math.ceil(totalItems / pageSize);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.onclick = function() {
+                    currentPage = i;
+                    const start = (currentPage - 1) * pageSize;
+                    const end = start + pageSize;
+                    displayData(filteredData.slice(start, end));
+                };
+                pagination.appendChild(button);
+            }
+        }
+
+        fetchAndFilterData();
+    </script>
+</body>
+</html>
