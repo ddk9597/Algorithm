@@ -1,22 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="searchResult.css">
-    <title>서울시 부동산 중개업소 정보</title>
+    <title>부동산 중개업소 정보</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>부동산 중개업소 정보</h1>
 
     <div>
-        <label for="searchCggCd">구 명: </label>
+        <label for="searchCggCd">구명: </label>
         <input type="text" id="searchCggCd" placeholder="구명을 입력하세요">
         <label for="searchBzmnConm">업체명: </label>
         <input type="text" id="searchBzmnConm" placeholder="업체명을 입력하세요">
         <label for="searchMdtBsnsNm">담당자명: </label>
         <input type="text" id="searchMdtBsnsNm" placeholder="담당자명을 입력하세요">
-        <button onclick="filterData()">검색</button>
+        <button onclick="fetchAndFilterData()">검색</button>
     </div>
 
     <table id="landBizInfoTable">
@@ -31,7 +50,6 @@
                 <th>담당자명</th>
                 <th>업체명</th>
                 <th>전화번호</th>
-                <th>행정처분</th>
             </tr>
         </thead>
         <tbody>
@@ -39,28 +57,28 @@
         </tbody>
     </table>
 
+    <div class="pagination" id="pagination">
+        <!-- 페이지네이션 버튼이 여기에 삽입됩니다 -->
+    </div>
+
     <script>
-        let originalData = [];
-        const apiUrlTemplate = 'http://openapi.seoul.go.kr:8088/574345677664646b31303243637a7778/json/landBizInfo/{start}/{end}/';
-        const totalDataCount = 25874;
-        // const pageSize = 1000;
-        const pageSize = 500;
+        let filteredData = [];
+        const pageSize = 20;
+        let currentPage = 1;
 
-        async function fetchData(start, end) {
-            const apiUrl = apiUrlTemplate.replace('{start}', start).replace('{end}', end);
-            const response = await fetch(apiUrl);
+        async function fetchAndFilterData() {
+            const searchCggCd = document.getElementById('searchCggCd').value.toLowerCase();
+            const searchBzmnConm = document.getElementById('searchBzmnConm').value.toLowerCase();
+            const searchMdtBsnsNm = document.getElementById('searchMdtBsnsNm').value.toLowerCase();
+
+            const apiUrlTemplate = `http://openapi.seoul.go.kr:8088/574345677664646b31303243637a7778/json/landBizInfo/1/1000/?CGG_CD=${searchCggCd}&BZMN_CONM=${searchBzmnConm}&MDT_BSNS_NM=${searchMdtBsnsNm}`;
+
+            const response = await fetch(apiUrlTemplate);
             const data = await response.json();
-            return data.landBizInfo.row;
-        }
-
-        async function fetchAllData() {
-            const promises = [];
-            for (let i = 1; i <= totalDataCount; i += pageSize) {
-                promises.push(fetchData(i, i + pageSize - 1));
-            }
-            const results = await Promise.all(promises);
-            originalData = results.flat();
-            displayData(originalData);
+            filteredData = data.landBizInfo.row;
+            currentPage = 1;
+            displayData(filteredData.slice(0, pageSize));
+            setupPagination(filteredData.length);
         }
 
         function displayData(data) {
@@ -82,22 +100,24 @@
             });
         }
 
-        function filterData() {
-            const searchCggCd = document.getElementById('searchCggCd').value.toLowerCase();
-            const searchBzmnConm = document.getElementById('searchBzmnConm').value.toLowerCase();
-            const searchMdtBsnsNm = document.getElementById('searchMdtBsnsNm').value.toLowerCase();
+        function setupPagination(totalItems) {
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
 
-            const filteredData = originalData.filter(function(item) {
-                return (searchCggCd === '' || item.CGG_CD.toLowerCase().includes(searchCggCd)) &&
-                       (searchBzmnConm === '' || item.BZMN_CONM.toLowerCase().includes(searchBzmnConm)) &&
-                       (searchMdtBsnsNm === '' || item.MDT_BSNS_NM.toLowerCase().includes(searchMdtBsnsNm));
-            });
+            const totalPages = Math.ceil(totalItems / pageSize);
 
-            displayData(filteredData);
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.onclick = function() {
+                    currentPage = i;
+                    const start = (currentPage - 1) * pageSize;
+                    const end = start + pageSize;
+                    displayData(filteredData.slice(start, end));
+                };
+                pagination.appendChild(button);
+            }
         }
-
-        // 초기 데이터 로드
-        fetchAllData();
     </script>
 </body>
 </html>
