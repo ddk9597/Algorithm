@@ -1,6 +1,6 @@
 package com.training;
 
-/*당신은 순서대로 n개의 퍼즐을 제한 시간 내에 풀어야 하는 퍼즐 게임을 하고 있습니다. 
+/* 당신은 순서대로 n개의 퍼즐을 제한 시간 내에 풀어야 하는 퍼즐 게임을 하고 있습니다. 
  * 각 퍼즐은 난이도와 소요 시간이 정해져 있습니다. 
  * 당신의 숙련도에 따라 퍼즐을 풀 때 틀리는 횟수가 바뀌게 됩니다. 
  * 현재 퍼즐의 난이도를 diff, 현재 퍼즐의 소요 시간을 time_cur, 
@@ -36,53 +36,60 @@ package com.training;
  * 
  * */
 
-public class Solution022 {
+public class Solution022_1 {
 
+	// 이진탐색을 활용한 문제 해결
+	
 	public int solution(int[] diffs, int[] times, long limit) {
-        int left = 1; // 최소 숙련도
-        int right = 100000; // 최대 숙련도는 난이도의 최댓값
-        int answer = right;
-
-        while (left <= right) {
-            int mid = left + (right - left) / 2; // 중간값 계산
-            if (canSolveAllPuzzles(diffs, times, limit, mid)) {
-                answer = mid; // 해결 가능
-                right = mid - 1; // 더 낮은 숙련도에서 해결 가능한지 탐색
-            } else {
-                left = mid + 1; // 숙련도를 높여야 함
-            }
-        }
-
-        return answer;
-    }
-
-    private boolean canSolveAllPuzzles(int[] diffs, int[] times, long limit, int level) {
-        long totalTime = 0; // 누적 시간
-        int prevTime = 0; // 이전 퍼즐의 소요 시간
-
-        for (int i = 0; i < diffs.length; i++) {
-            int diff = diffs[i];
-            int timeCur = times[i];
-
-            if (diff <= level) {
-                // 현재 숙련도로 틀리지 않고 해결
-                totalTime += timeCur;
-            } else {
-                // 틀린 횟수 계산
-                int mistakes = diff - level;
-                totalTime += mistakes * (timeCur + prevTime) + timeCur;
-            }
-
-            // 제한 시간 초과 여부 체크
-            if (totalTime > limit) {
-                return false;
-            }
-
-            // 현재 퍼즐의 소요 시간을 prevTime으로 업데이트
-            prevTime = timeCur;
-        }
-
-        return totalTime <= limit;
-    }
+		
+		int left = 1; // 최소 숙련도
+		int right = 10000; //최대 숙련도는 난이도의 최댓값
+		int answer = right;
+		
+		while(left <= right) {
+			int mid = left + (right - left)/2; // 중간값 계산.
+			if(canSolveAllPuzzles(diffs, times, limit, mid)) {
+				answer = mid; // can solve
+				right = mid-1; // 더 낮은 숙련도에서 해결 가능한지 탐색
+			}
+		}
+		
+		return answer;
+		
+	}
+	
+	private boolean canSolveAllPuzzles(int[] diffs, int[] times, long limit, int level) {
+		
+		long totalTime = 0; // 누적 시간
+		int prevTime = 0;   // 이전 퍼즐의 소요 시간
+		
+		for(int i = 0 ; i < diffs.length; i ++) {
+			int diff = diffs[i];
+			int timeCur = times[i];
+			
+			// 문제 난이도가 숙련도 이하라면
+			if(diff <= level) {
+				// 현재 숙련도로 틀리지 않고 문제 해결
+				totalTime += timeCur;
+				
+				// 문제를 현재 숙련도로 풀지 못한다면
+			} else {
+				// 틀린 횟수 계산
+				int mistakes = diff - level;
+				totalTime += mistakes * (timeCur + prevTime) + timeCur;
+			}
+			
+			// 없어도 되는 부분
+//			// 제한 시간 초과 여부 체크
+//			if(totalTime > limit) {
+//				return false;
+//			}
+			
+			// 현재 퍼즐의 소요 시간을 prevTime으로 업데이트
+			prevTime = timeCur;
+		}
+		
+		return totalTime <= limit;
+	}
 	
 }
