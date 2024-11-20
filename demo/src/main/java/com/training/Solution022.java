@@ -1,6 +1,6 @@
 package com.training;
 
-/*당신은 순서대로 n개의 퍼즐을 제한 시간 내에 풀어야 하는 퍼즐 게임을 하고 있습니다. 
+/* 당신은 순서대로 n개의 퍼즐을 제한 시간 내에 풀어야 하는 퍼즐 게임을 하고 있습니다. 
  * 각 퍼즐은 난이도와 소요 시간이 정해져 있습니다. 
  * 당신의 숙련도에 따라 퍼즐을 풀 때 틀리는 횟수가 바뀌게 됩니다. 
  * 현재 퍼즐의 난이도를 diff, 현재 퍼즐의 소요 시간을 time_cur, 
@@ -56,7 +56,8 @@ public class Solution022 {
         return answer;
     }
 
-    private boolean canSolveAllPuzzles(int[] diffs, int[] times, long limit, int level) {
+    private boolean canSolveAllPuzzles
+    	(int[] diffs, int[] times, long limit, int level) {
         long totalTime = 0; // 누적 시간
         int prevTime = 0; // 이전 퍼즐의 소요 시간
 

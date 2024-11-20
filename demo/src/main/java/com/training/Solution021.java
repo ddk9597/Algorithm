@@ -29,58 +29,7 @@ package com.training;
  * */
 
 public class Solution021 {
-	 public static String solution(String video_len, String pos, String op_start, String op_end, String[] commands) {
-	        // Helper: 시간 문자열 "mm:ss"를 초 단위로 변환
-	        int timeToSeconds(String time) {
-	            String[] parts = time.split(":");
-	            return Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
-	        }
-
-	        // Helper: 초 단위를 "mm:ss" 형식의 문자열로 변환
-	        String secondsToTime(int seconds) {
-	            int minutes = seconds / 60;
-	            int secs = seconds % 60;
-	            return String.format("%02d:%02d", minutes, secs);
-	        }
-
-	        // 동영상 길이와 재생 위치, 오프닝 구간의 초 단위 값 계산
-	        int videoLen = timeToSeconds(video_len);
-	        int position = timeToSeconds(pos);
-	        int opStart = timeToSeconds(op_start);
-	        int opEnd = timeToSeconds(op_end);
-
-	        // 각 명령 처리
-	        for (String command : commands) {
-	            if (command.equals("prev")) {
-	                // 10초 전으로 이동
-	                position = Math.max(position - 10, 0);
-	            } else if (command.equals("next")) {
-	                // 10초 후로 이동
-	                position = Math.min(position + 10, videoLen);
-	            }
-
-	            // 오프닝 구간 처리
-	            if (opStart <= position && position <= opEnd) {
-	                position = opEnd;
-	            }
-	        }
-
-	        // 최종 위치를 "mm:ss" 형식으로 변환하여 반환
-	        return secondsToTime(position);
-	    }
-
-	    public static void main(String[] args) {
-	        // 테스트 케이스
-	        String video_len = "05:00";
-	        String pos = "00:20";
-	        String op_start = "00:00";
-	        String op_end = "00:15";
-	        String[] commands = {"prev", "prev", "next", "next"};
-
-	        String result = solution(video_len, pos, op_start, op_end, commands);
-	        System.out.println(result); // 결과 출력
-	    }
-	        
+	 
 	        
 	        
 	       
