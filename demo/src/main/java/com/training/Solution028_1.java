@@ -49,7 +49,7 @@ import java.util.List;
  * 
  * */
 
-public class Solutuon028_1 {
+public class Solution028_1 {
 
 	public int[] solution(String[] wallpaper) {
         // 최소와 최대 좌표를 초기화.

@@ -49,7 +49,7 @@ import java.util.List;
  * 
  * */
 
-public class Solutuon028_2 {
+public class Solution028_2 {
 
 	public int[] solution(String[] wallpaper) {
 
