@@ -24,33 +24,26 @@ public class Solution004_3 {
 
 	public int[] solution(String s) {
 
-		// 반환할 결과를 저장할 배열. 주어진 문자열과 같은 크기를 가짐.
+		// 결괏 값을 저장할 result 배열 초기화
 		int[] result = new int[s.length()];
-
-		// 각 문자가 마지막으로 등장한 위치를 저장하는 맵 saveLetters선언
-		Map<Character, Integer> saveLetters = new HashMap<>();
-
-		// 주어진 문자열의 길이만큼 반복
-		for (int i = 0; i < s.length(); i++) {
-			// 현재 인덱스의 묹를 기준으로 작동함
+		
+		// 주어진 문자열을 각 인덱스마다 순회하여 현재 값을 저장함.
+		
+		// 각 letter별 값을 저장할 Map
+		Map<Character, Integer>letters = new HashMap<>();
+		
+		// 현재 인덱스의 Character가 lettes에 없다면 -1을 result에 저장
+		// 있다면 현재 인덱스와 그 다음으로 작은인덱스에 위치한 문자의 인덱스의 차이를 반환
+		for(int i = 0 ; i < s.length() ; i ++) {
 			char currentChar = s.charAt(i);
-
-			// saveLetters에 currentChar보다 작은 인덱스에 같은 문자가 있는지 확인
-			// 있다면 결괏값의 i번째 인덱스의 값 == i - 같은 글자의 인덱스번호.
-			if (saveLetters.containsKey(currentChar)) {
-				result[i] = i - saveLetters.get(currentChar);
-
-				// 없으면 -1을 반환함
-			} else {
-				result[i] = -1;
-
-			}
-
-			// 뒤에 오는 i와의 비교를 위해 map에 c,i 저장
-			saveLetters.put(currentChar, i);
-
+			
+			if(letters.containsKey(currentChar)) {
+				result[i] = i - letters.get(currentChar);
+			} else result[i] = -1 ;
+			
+			letters.put(currentChar, i);
 		}
-
+		
 		return result;
 	}
 
