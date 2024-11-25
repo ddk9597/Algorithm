@@ -8,7 +8,8 @@ import java.util.Map;
 /* 가장 많이 받은 선물
  * 선물을 주고 받은 기록을 바탕으로 다음 달에 누가 선물을 많이 받는 지 예측
  * 
- * 두 사람이 선물을 주고받은 기록이 있다면, 이번 달까지 두 사람 사이에 더 많은 선물을 준 사람이 다음 달에 선물을 하나 받습니다.
+ * 두 사람이 선물을 주고받은 기록이 있다면, 
+ * 이번 달까지 두 사람 사이에 더 많은 선물을 준 사람이 다음 달에 선물을 하나 받습니다.
  * 예를 들어 A가 B에게 선물을 5번 줬고, B가 A에게 선물을 3번 줬다면 다음 달엔 A가 B에게 선물을 하나 받습니다.
  * 
  * 두 사람이 선물을 주고받은 기록이 하나도 없거나 주고받은 수가 같다면, 
@@ -51,65 +52,10 @@ import java.util.Map;
  * 	3). giver, reveiver를 비교, 선물지수 추출
  * 
  * */
-public class Solution005 {
+public class Solution005_2 {
 	public int solution(String[] friends, String[] gifts) {
 
-		int a = friends.length;
-
-		// giftQuotient 비교하기 위한 List 객체 생성
-		List<String> giveCount = new ArrayList<>();
-		List<String> receiveCount = new ArrayList<>();
-
-		// 서로 준 선물 비교하기 위한 map 객체 생성
-		Map<String, Integer> compare = new HashMap<>();
-
-		// friends Array를 순회하면서 값 비교하기
-		for (int i = 0; i < a; i++) {
-			// 1. freinds 배열에 있다면 compare의 Key에 추가, value는 우선 0으로 설정
-			if (!friends[i].isEmpty()) {
-				compare.put(friends[i], 0);
-			}
-		}
-
-		// 2. gifts의 i 번째 인덱스의 첫번째 문자가 compare에 있다면 해당 Key의 value를 =+1
-		for (String gift : gifts) {
-			String[] parts = gift.split(" ");
-			String giver = parts[0];
-			String receiver = parts[1];
-
-			// 3. 주는 사람, 받는 사람 각각을 List에 중복 여부 상관 없이 추가
-			giveCount.add(giver);
-			receiveCount.add(receiver);
-		}
-
-		// 4. 선물 지수 구하기
-		// friends Array를 순회하면서 각각 giver, receiver에 있는 수를 확인 후 선물 지수 계산하기
-		for (String name : friends) {
-
-			int given = 0;
-			int received = 0;
-
-			// given ++ 조건 및 수행
-			for (String giver : giveCount) {
-				if (giver.equals(name)) {
-					given++;
-				}
-			}
-
-			for (String receiver : receiveCount) {
-				if (receiver.equals(name)) {
-					received++;
-				}
-			}
-			
-			int giftQuotient = given - received;
-			compare.put(name, giftQuotient);
-
-		}
-
-		// 최종 결산하기
-
-		int answer = 0;
+		
 		return answer;
 	}
 }
