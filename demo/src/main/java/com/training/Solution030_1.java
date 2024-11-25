@@ -120,8 +120,6 @@ public class Solution030_1 {
                     queue.offer(new int[]{nx, ny, time + 1});
                 }
             }
-        	
-        	
         
 		}
 		
