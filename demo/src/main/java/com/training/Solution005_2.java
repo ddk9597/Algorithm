@@ -1,6 +1,8 @@
 package com.training;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +58,49 @@ public class Solution005_2 {
 	public int solution(String[] friends, String[] gifts) {
 
 		
+		// giftRecords : <준 사람, <받은 사람, 갯수>>
+		Map<String, Map<String, Integer>> giftRecords = new HashMap<>();
+		Map<String, Integer> giftScore = new HashMap<>();
+		Map<String, Integer> nextMonthGifts = new HashMap<>();
+		
+		// 초기화
+		for(String friend : friends) {
+			giftRecords.put(friend, new HashMap<>());
+			giftScore.put(friend, 0);
+			nextMonthGifts.put(friend, 0);
+		}
+		
+		// 선물 기록 및 선물 지수 업데이트
+		for(String gift : gifts) {
+			String[] parts = gift.split(" ");
+			String giver = parts[0];
+			String receiver = parts[1];
+			
+			// 선물 기록 업뎃
+			// 준 사람의 선물 기록
+			giftRecords.get(giver).put(receiver, giftRecords.get(giver).getOrDefault(receiver,0) +1);
+			giftScore.put(giver,  giftScore.get(giver)+1); // 준 사람의 선물 점수는 +1
+			giftScore.put(receiver, giftScore.get(receiver)-1); // 받은 사람의 선물 점수는 -1
+		}
+		
+		// 다음 달 선물 받을 횟수 계산
+		for(String giver : friends) {
+			for (String receiver : friends) {
+				if(!giver.equals(receiver)) {
+					int giftsFromGiver = giftRecords.get(giver).getOrDefault(receiver,0);
+					int giftsFromReciever = giftRecords.get(receiver).getOrDefault(giver, 0);
+					
+					if(giftsFromGiver > giftsFromReciever) {
+						nextMonthGifts.put(giver,  nextMonthGifts.get(giver)+1);
+						
+					} else if (giftsFromGiver == giftsFromReciever && giftScore.get(giver) > giftScore.get(receiver)) {
+						nextMonthGifts.put(giver,  nextMonthGifts.get(giver)+1);
+					}
+				}
+			}
+		}
+		
+		int answer = Collections.max(nextMonthGifts.values());
 		return answer;
 	}
 }
